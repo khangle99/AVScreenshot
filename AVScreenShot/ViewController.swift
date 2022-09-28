@@ -17,8 +17,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var thumbholderImageVIew: UIImageView!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         setupStream()
     }
     
@@ -32,7 +32,8 @@ class ViewController: UIViewController {
         
         player = AVPlayer(playerItem: item)
         let layer = AVPlayerLayer(player: player)
-        layer.frame = playerContainer.bounds
+        //layer.videoGravity = .resize
+        layer.frame = playerContainer.layer.bounds
         
         playerContainer.layer.addSublayer(layer)
         player.play()
@@ -62,7 +63,7 @@ class ViewController: UIViewController {
         let logo = UIImage(named: "logo")!
         let qr = UIImage(named: "sampleqr")!
         
-        let processedImg = addWaterMark(originImage: img, logoImage: logo, title: "Sing now", subtitle: "Author Name", qrImage: qr)
+        let processedImg = addWaterMark(originImage: img, logoImage: logo, title: "Sing nowdqwdqwdqwdqwdqwdqwdq", subtitle: "Author NamedqdqqwdqdqwdqqNamedqdqqwdqdqwdqqNamedqdqqwdqdqwdqq", qrImage: qr)
         
         let urlString = "Something"
         
@@ -81,9 +82,9 @@ class ViewController: UIViewController {
     /// - Returns: Image which include app watermark
     private func addWaterMark(originImage: UIImage, logoImage: UIImage, title: String, subtitle: String, qrImage: UIImage) -> UIImage {
         
-        let watermarkHeight: CGFloat = 60
         let originalSize = originImage.size
-        let spacing: CGFloat = 5
+        let watermarkHeight: CGFloat = originalSize.height*0.1
+        let spacing: CGFloat = 10
         
         let containerView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: originalSize.width, height: originalSize.height + watermarkHeight)))
         
@@ -96,8 +97,9 @@ class ViewController: UIViewController {
         stack.spacing = spacing
         stack.axis = .horizontal
         stack.distribution = .fill
-        stack.alignment = .fill
-        stack.layoutMargins = .init(top: 0, left: 24, bottom: 0, right: 24)
+        stack.alignment = .center
+        stack.layoutMargins = .init(top: 0, left: 16, bottom: 0, right: 16)
+        stack.isLayoutMarginsRelativeArrangement = true
         
         stack.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(stack)
@@ -116,7 +118,8 @@ class ViewController: UIViewController {
         logoImageView.image = logoImage
         stack.addArrangedSubview(logoImageView)
         NSLayoutConstraint.activate([
-            logoImageView.widthAnchor.constraint(equalToConstant: 40)
+            logoImageView.widthAnchor.constraint(equalToConstant: watermarkHeight*0.6),
+            logoImageView.heightAnchor.constraint(equalToConstant: watermarkHeight*0.6),
         ])
         
         // add title & subtitle
@@ -124,7 +127,6 @@ class ViewController: UIViewController {
         songInfoStack.axis = .vertical
         songInfoStack.alignment = .leading
         songInfoStack.distribution = .fillEqually
-        songInfoStack.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         
         let titleLabel = UILabel()
         titleLabel.textColor = .black
@@ -140,6 +142,9 @@ class ViewController: UIViewController {
         songInfoStack.addArrangedSubview(subtitleLabel)
         
         stack.addArrangedSubview(songInfoStack)
+        NSLayoutConstraint.activate([
+            songInfoStack.heightAnchor.constraint(equalTo: logoImageView.heightAnchor)
+        ])
         
         // add qr
         let qrImageView = UIImageView()
@@ -147,7 +152,7 @@ class ViewController: UIViewController {
         qrImageView.image = qrImage
         stack.addArrangedSubview(qrImageView)
         NSLayoutConstraint.activate([
-            qrImageView.widthAnchor.constraint(equalToConstant: 40)
+            qrImageView.widthAnchor.constraint(equalToConstant: watermarkHeight*0.85)
         ])
         
         stack.layoutIfNeeded()
